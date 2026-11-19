@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#efe6d4">
+<meta name="format-detection" content="telephone=no">
+<meta name="description" content="每天 10 个六级高频词。先看记忆钩子，再选意思，微信里打开就能背。">
+<meta property="og:title" content="六级十词">
+<meta property="og:description" content="每天 10 个六级高频词。先看记忆钩子，再选意思，微信里打开就能背。">
+<title>六级十词</title>
+<style>
+  :root {
+    --bg: #efe6d4;
+    --ink: #241f1a;
+    --muted: #6f675c;
+    --card: #fffaf2;
+    --line: rgba(36, 31, 26, .08);
+    --cinnabar: #c23b22;
+    --green: #1b7a4a;
+    --green-bg: #e5f6ec;
+    --red-bg: #fdeceb;
+    --amber: #f4e4c4;
+    --amber-ink: #7a5420;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    color: var(--ink);
+    font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+    background:
+      radial-gradient(900px 420px at 0% -10%, #fff 0%, transparent 55%),
+      radial-gradient(700px 380px at 100% 0%, #f6dfc0 0%, transparent 50%),
+      var(--bg);
+    min-height: 100dvh;
+  }
+  button, input { font: inherit; color: inherit; }
+  button {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    cursor: pointer;
+    user-select: none;
+  }
+  #app {
+    width: min(440px, 100%);
+    margin: 0 auto;
+    padding: calc(22px + env(safe-area-inset-top)) 18px calc(28px + env(safe-area-inset-bottom));
+  }
+  h1 {
+    margin: 0 0 8px;
+    font-size: 40px;
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+    font-weight: 700;
+  }
+  .lead { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.65; }
+  .mark {
+    width: 54px;
+    height: 54px;
+    margin: 4px 0 16px;
+    border: 2px solid var(--cinnabar);
+    color: var(--cinnabar);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    letter-spacing: .14em;
+    font-size: 13px;
+    transform: rotate(-8deg);
+    box-shadow: inset 0 0 0 3px rgba(194, 59, 34, .16);
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin: 18px 0 16px;
+  }
+  .stat {
+    background: rgba(255, 250, 242, .78);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 12px 6px 10px;
+    text-align: center;
+  }
+  .stat b {
+    display: block;
+    font-size: 22px;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em;
+  }
+  .stat span { display: block; margin-top: 2px; color: var(--muted); font-size: 12px; }
+  .bar {
+    height: 6px;
+    border-radius: 99px;
+    background: rgba(36, 31, 26, .08);
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .bar span { display: block; height: 100%; background: var(--green); border-radius: 99px; }
+  .btn {
+    appearance: none;
+    border: 0;
+    width: 100%;
+    min-height: 54px;
+    padding: 12px 16px;
+    border-radius: 16px;
+    background: var(--ink);
+    color: #f6f0e4;
+    font-size: 17px;
+    font-weight: 650;
+    font-weight: 600;
+  }
+  .btn:active { transform: scale(.99); }
+  .btn.ghost {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid rgba(36, 31, 26, .16);
+  }
+  .btn:disabled { opacity: .45; }
+  .stack { display: grid; gap: 10px; margin-top: 8px; }
+  .linkish {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    width: 100%;
+    min-height: 44px;
+    color: var(--muted);
+    font-size: 14px;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+  .quiet {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    padding: 6px 0;
+    font-size: 14px;
+  }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    height: 26px;
+    padding: 0 10px;
+    border-radius: 999px;
+    background: var(--amber);
+    color: var(--amber-ink);
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .segs { display: flex; gap: 4px; margin: 14px 0 16px; }
+  .segs i { flex: 1; height: 4px; border-radius: 99px; background: rgba(36, 31, 26, .12); }
+  .segs i.on { background: var(--ink); }
+  .segs i.ok { background: var(--green); }
+  .segs i.bad { background: var(--cinnabar); }
+  .panel {
+    background: var(--card);
+    border-radius: 22px;
+    padding: 20px 18px 16px;
+    border: 1px solid rgba(60, 40, 20, .05);
+    box-shadow: 0 12px 32px rgba(80, 50, 20, .06);
+  }
+  .word {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, serif;
+    font-size: 38px;
+    line-height: 1.12;
+    margin: 10px 0 4px;
+    letter-spacing: -0.03em;
+    word-break: break-word;
+  }
+  .meta { margin: 0; color: var(--muted); font-size: 14px; }
+  .meta b { color: var(--ink); font-weight: 600; }
+  .hook {
+    margin: 14px 0 0;
+    padding: 12px 14px;
+    background: #f6f0e4;
+    border-radius: 14px;
+    color: #4e463d;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .hook em, .kicker {
+    font-style: normal;
+    display: block;
+    margin-bottom: 2px;
+    color: var(--amber-ink);
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .cloze {
+    margin: 12px 0 0;
+    font-family: Georgia, Palatino, serif;
+    font-size: 22px;
+    line-height: 1.45;
+  }
+  .exzh { margin: 8px 0 0; color: var(--muted); font-size: 14px; line-height: 1.55; }
+  .opts { display: grid; gap: 10px; margin-top: 14px; }
+  .opt {
+    appearance: none;
+    -webkit-appearance: none;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    text-align: left;
+    width: 100%;
+    border: 1px solid var(--line);
+    background: #fff;
+    border-radius: 16px;
+    padding: 13px 14px;
+    color: var(--ink);
+  }
+  .opt:disabled { opacity: 1; color: var(--ink); }
+  .opt .k {
+    flex: 0 0 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #f3ecdf;
+    display: grid;
+    place-items: center;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .opt .t { flex: 1; line-height: 1.45; padding-top: 2px; font-size: 16px; }
+  .opt .t.en { font-family: Georgia, Palatino, serif; font-size: 20px; padding-top: 0; }
+  .opt.good { background: var(--green-bg); border-color: var(--green); }
+  .opt.bad { background: var(--red-bg); border-color: var(--cinnabar); }
+  .opt:not(:disabled):active { transform: scale(.985); }
+  .note { margin-top: 14px; padding: 14px; border-radius: 16px; background: #fff; scroll-margin-top: 12px; }
+  .scroll-pad { height: 92px; }
+  .dock {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 4;
+    padding: 18px 18px calc(12px + env(safe-area-inset-bottom));
+    background: linear-gradient(180deg, rgba(239, 230, 212, 0), #efe6d4 46%);
+  }
+  .dock .btn { width: min(404px, 100%); margin: 0 auto; display: block; }
+  .note.ok { background: var(--green-bg); }
+  .note.bad { background: var(--red-bg); }
+  .note h2 { margin: 0 0 6px; font-size: 18px; }
+  .note p { margin: 6px 0 0; line-height: 1.55; font-size: 15px; }
+  .note .ex { font-family: Georgia, Palatino, serif; font-size: 16px; }
+  .usage {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: rgba(36, 31, 26, .06);
+    font-size: 12px;
+    letter-spacing: .01em;
+  }
+  .speak {
+    appearance: none;
+    margin-top: 10px;
+    border: 0;
+    background: transparent;
+    color: var(--amber-ink);
+    padding: 0;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .card {
+    background: var(--card);
+    border-radius: 22px;
+    min-height: 250px;
+    padding: 22px 18px;
+    border: 1px solid rgba(60, 40, 20, .05);
+    box-shadow: 0 12px 32px rgba(80, 50, 20, .06);
+    text-align: left;
+    width: 100%;
+    cursor: pointer;
+  }
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+  .chip {
+    appearance: none;
+    border: 1px solid var(--line);
+    background: transparent;
+    border-radius: 999px;
+    min-height: 34px;
+    padding: 0 12px;
+    font-size: 13px;
+  }
+  .chip.on { background: var(--ink); color: #f6f0e4; border-color: var(--ink); }
+  .nav { display: grid; grid-template-columns: 1fr 1.2fr 1fr; gap: 8px; margin-top: 12px; }
+  .count { color: var(--muted); font-size: 13px; margin: 0 0 8px; }
+  .flag {
+    display: inline-block;
+    margin-bottom: 8px;
+    color: var(--cinnabar);
+    font-size: 12px;
+    font-weight: 700;
+  }
+  details {
+    margin-top: 22px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  summary { cursor: pointer; min-height: 32px; }
+  details ol { padding-left: 18px; }
+  .url, .search {
+    width: 100%;
+    margin-top: 8px;
+    border: 1px solid var(--line);
+    background: #fff;
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-size: 16px;
+  }
+  .search { min-height: 46px; margin: 8px 0 0; }
+  .foot { margin: 18px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(18px + env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: #fff;
+    border-radius: 999px;
+    padding: 10px 14px;
+    font-size: 13px;
+    max-width: min(400px, calc(100% - 32px));
+    z-index: 5;
+  }
+  .audit {
+    margin-top: 12px;
+    padding: 10px 12px;
+    background: var(--red-bg);
+    border-radius: 12px;
+    color: var(--cinnabar);
+    font-size: 12px;
+    white-space: pre-wrap;
+  }
+  strong { font-weight: 700; }
+  @media (max-width: 360px) {
+    h1 { font-size: 34px; }
+    .word, .cloze { font-size: 30px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="words.js"></script>
+<script>
+const BY_WORD = {};
+WORDS.forEach(function (item) { BY_WORD[item.w] = item; });
+function canQuiz(word) {
+  return !!(word && word.zh && /^[a-z][a-z'-]*$/i.test(word.w));
+}
+const QUIZ = WORDS.filter(canQuiz);
+
+const KEY = "cet6-ten-words-v1";
+const ROUND = 10;
+const LETTERS = ["A", "B", "C", "D"];
+
+let save = load();
+const state = {
+  screen: "home",
+  queue: [],
+  cursor: 0,
+  phase: "ask",
+  choice: null,
+  marks: [],
+  right: 0,
+  deckFilter: "all",
+  deckQuery: "",
+  deckAt: 0,
+  review: [],
+  reviewAt: 0,
+  flipped: false,
+  toast: ""
+};
+let toastTimer = 0;
+const AUDIT = audit();
+
+function load() {
+  try {
+    const data = JSON.parse(localStorage.getItem(KEY) || "null");
+    if (!data || typeof data !== "object") return blank();
+    data.words = data.words || {};
+    data.todayWords = data.todayWords || [];
+    return data;
+  } catch (e) {
+    return blank();
+  }
+}
+function blank() {
+  return { streak: 0, lastPlay: "", today: "", todayWords: [], words: {} };
+}
+function persist() {
+  try { localStorage.setItem(KEY, JSON.stringify(save)); } catch (e) {}
+}
+function todayKey(offset) {
+  const d = new Date();
+  if (offset) d.setDate(d.getDate() + offset);
+  return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+}
+function rec(w) {
+  return save.words[w] || { s: 0, right: 0, wrong: 0, mastered: false };
+}
+function record(w, ok) {
+  const r = rec(w);
+  if (ok) {
+    r.s += 1;
+    r.right += 1;
+    r.mastered = r.s >= 2;
+  } else {
+    r.s = 0;
+    r.wrong += 1;
+    r.mastered = false;
+  }
+  save.words[w] = r;
+  const t = todayKey();
+  if (save.today !== t) {
+    save.today = t;
+    save.todayWords = [];
+  }
+  if (save.todayWords.indexOf(w) < 0) save.todayWords.push(w);
+  persist();
+  return r;
+}
+function markPlayed() {
+  const t = todayKey();
+  if (save.lastPlay === t) return;
+  save.streak = save.lastPlay === todayKey(-1) ? (save.streak || 0) + 1 : 1;
+  save.lastPlay = t;
+  persist();
+}
+function masteredCount() {
+  return WORDS.filter((w) => rec(w.w).mastered).length;
+}
+function todayCount() {
+  if (save.today !== todayKey()) return 0;
+  return save.todayWords.length;
+}
+function wrongPool() {
+  return QUIZ.filter((w) => {
+    const r = rec(w.w);
+    return r.wrong > 0 && !r.mastered;
+  });
+}
+function weightOf(word, onlyWrong) {
+  const r = rec(word.w);
+  if (onlyWrong) return r.wrong > 0 && !r.mastered ? 1 + r.wrong : 0;
+  if (r.mastered) return word.ez ? 0.04 : 0.18;
+  let wt = word.ez ? 0.2 : 1;
+  if (!r.right && !r.wrong) wt += 2.2;
+  if (r.wrong) wt += r.wrong * 2;
+  if (r.s === 1) wt += 1.6;
+  return wt;
+}
+function shuffle(list) {
+  const a = list.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const t = a[i];
+    a[i] = a[j];
+    a[j] = t;
+  }
+  return a;
+}
+function pickWords(n, onlyWrong) {
+  const pool = [];
+  QUIZ.forEach((w) => {
+    const wt = weightOf(w, onlyWrong);
+    if (wt > 0) pool.push({ w: w, wt: wt });
+  });
+  const chosen = [];
+  while (chosen.length < n && pool.length) {
+    let total = 0;
+    pool.forEach((x) => { total += x.wt; });
+    let r = Math.random() * total;
+    let idx = 0;
+    for (let i = 0; i < pool.length; i++) {
+      r -= pool[i].wt;
+      if (r <= 0) { idx = i; break; }
+    }
+    chosen.push(pool[idx].w);
+    pool.splice(idx, 1);
+  }
+  return chosen;
+}
+function others(word, n) {
+  const picked = [];
+  const used = {};
+  used[word.w] = 1;
+  (word.trap || []).forEach((id) => {
+    const t = BY_WORD[id];
+    if (t && !used[t.w] && picked.length < n && t.zh !== word.zh) {
+      picked.push(t);
+      used[t.w] = 1;
+    }
+  });
+  let tries = 0;
+  while (picked.length < n && tries < 120) {
+    tries += 1;
+    const x = QUIZ[(Math.random() * QUIZ.length) | 0];
+    if (!x || used[x.w] || x.zh === word.zh) continue;
+    if (word.pos && picked.length < n - 1 && x.pos !== word.pos) continue;
+    used[x.w] = 1;
+    picked.push(x);
+  }
+  tries = 0;
+  while (picked.length < n && tries < 80) {
+    tries += 1;
+    const x = QUIZ[(Math.random() * QUIZ.length) | 0];
+    if (!x || used[x.w] || x.zh === word.zh) continue;
+    used[x.w] = 1;
+    picked.push(x);
+  }
+  return picked;
+}
+function buildQ(word, type) {
+  if (type === "cloze" && !hasLemma(word)) type = "en2zh";
+  const pool = [word].concat(others(word, 3));
+  const english = type === "zh2en" || type === "cloze";
+  const options = shuffle(pool).map((x) => english ? x.w : x.zh);
+  return { word: word, type: type, options: options, answer: english ? word.w : word.zh };
+}
+function start(mode) {
+  const onlyWrong = mode === "wrong";
+  const available = onlyWrong ? wrongPool().length : QUIZ.length;
+  const n = Math.min(ROUND, available);
+  if (!n) return;
+  const types = ["en2zh", "en2zh", "zh2en", "en2zh", "cloze", "en2zh", "zh2en", "en2zh", "cloze", "en2zh"];
+  state.queue = pickWords(n, onlyWrong).map((w, i) => buildQ(w, types[i % types.length]));
+  state.cursor = 0;
+  state.phase = "ask";
+  state.choice = null;
+  state.marks = [];
+  state.right = 0;
+  state.screen = "quiz";
+  state.flipped = false;
+  render();
+}
+function onPick(i) {
+  if (state.screen !== "quiz" || state.phase !== "ask") return;
+  const q = state.queue[state.cursor];
+  if (!q || i < 0 || i >= q.options.length) return;
+  const ok = q.options[i] === q.answer;
+  state.choice = i;
+  state.phase = "reveal";
+  state.marks[state.cursor] = ok ? "ok" : "bad";
+  if (ok) state.right += 1;
+  record(q.word.w, ok);
+  render();
+}
+function onNext() {
+  if (state.cursor + 1 >= state.queue.length) {
+    markPlayed();
+    const seen = {};
+    const wrongs = [];
+    const oks = [];
+    state.queue.forEach((q, i) => {
+      if (seen[q.word.w]) return;
+      seen[q.word.w] = true;
+      if (state.marks[i] === "bad") wrongs.push(q.word);
+      else oks.push(q.word);
+    });
+    state.review = wrongs.concat(oks);
+    state.reviewAt = 0;
+    state.flipped = false;
+    state.screen = "done";
+    render();
+    return;
+  }
+  state.cursor += 1;
+  state.phase = "ask";
+  state.choice = null;
+  render();
+}
+function deckList() {
+  const q = (state.deckQuery || "").trim().toLowerCase();
+  return WORDS.filter((w) => {
+    const r = rec(w.w);
+    if (state.deckFilter === "fresh" && r.mastered) return false;
+    if (state.deckFilter === "mastered" && !r.mastered) return false;
+    if (state.deckFilter === "wrong" && !(r.wrong > 0 && !r.mastered)) return false;
+    if (!q) return true;
+    return w.w.toLowerCase().indexOf(q) >= 0 || String(w.zh || "").toLowerCase().indexOf(q) >= 0;
+  });
+}
+function speak(word) {
+  if (!window.speechSynthesis) {
+    toast("这台设备读不了，看音标就行");
+    return;
+  }
+  const u = new SpeechSynthesisUtterance(word);
+  u.lang = "en-GB";
+  u.rate = 0.88;
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(u);
+}
+function toast(msg) {
+  state.toast = msg;
+  let tip = document.querySelector(".toast");
+  if (!tip) {
+    tip = document.createElement("div");
+    tip.className = "toast";
+    document.getElementById("app").appendChild(tip);
+  }
+  tip.textContent = msg;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    state.toast = "";
+    const node = document.querySelector(".toast");
+    if (node) node.remove();
+  }, 2200);
+}
+function copyUrl() {
+  const url = location.href;
+  const done = () => toast("链接已复制，发到微信里点开");
+  const box = document.getElementById("share-url");
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(url).then(done).catch(fallback);
+    return;
+  }
+  fallback();
+  function fallback() {
+    if (!box) { toast("请长按地址复制"); return; }
+    box.focus();
+    box.select();
+    try {
+      if (document.execCommand("copy")) done();
+      else toast("请长按地址复制");
+    } catch (e) {
+      toast("请长按地址复制");
+    }
+  }
+}
+function resetProgress() {
+  if (!confirm("清空这台设备上的记忆进度？")) return;
+  save = blank();
+  persist();
+  state.screen = "home";
+  render();
+}
+function esc(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[c]));
+}
+function lemmaRe(w) {
+  return new RegExp("\\b(" + String(w).replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")\\b", "i");
+}
+function hasLemma(word) {
+  return !!(word.ex && lemmaRe(word.w).test(word.ex));
+}
+function hi(ex, w) {
+  if (!ex) return "";
+  return esc(ex).replace(lemmaRe(w), "<strong>$1</strong>");
+}
+function cloze(ex, w) {
+  return esc(String(ex).replace(lemmaRe(w), "______"));
+}
+function typeName(type) {
+  if (type === "zh2en") return "看义选词";
+  if (type === "cloze") return "例句选词";
+  return "看词选义";
+}
+function trapLine(word) {
+  if (!word.trap || !word.trap.length) return "";
+  const other = BY_WORD[word.trap[0]];
+  if (!other) return "";
+  return `<p class="meta">不要和 ${esc(other.w)}（${esc(other.zh)}）搞混。</p>`;
+}
+function memoryBlock(word) {
+  let html = "";
+  if (word.tip) html += `<p class="hook"><em>这样记</em>${esc(word.tip)}</p>`;
+  else if (word.ph) html += `<p class="hook"><em>搭配</em>${esc(word.ph)}</p>`;
+  if (word.ex) {
+    html += `<p class="ex">${hi(word.ex, word.w)}</p>`;
+    if (word.exzh) html += `<p>${esc(word.exzh)}</p>`;
+  }
+  if (word.tip && word.ph) html += `<p class="meta">${esc(word.ph)}</p>`;
+  if (word.usage) html += `<div class="usage">${esc(word.usage)}</div>`;
+  if (word.also) html += `<p class="meta">${esc(word.also)}</p>`;
+  html += trapLine(word);
+  return html;
+}
+function memoryNote(word, ok) {
+  const r = rec(word.w);
+  if (!ok) return (word.ex ? "先看例句。" : "") + "这个词会进错词本，下一轮更容易再遇到。";
+  if (r.mastered && r.s === 2) return "连续答对两次，先算记熟。过几天还会再遇见。";
+  if (r.s === 1) return "再答对一次，这个词就记成熟词。";
+  if (r.mastered) return "这个词你已经记熟了。";
+  return "";
+}
+function face(word, flipped, missed) {
+  const front = `
+    ${missed ? '<div class="flag">这轮错过</div>' : ""}
+    <div class="kicker">轻点卡片看意思</div>
+    <div class="word">${esc(word.w)}</div>
+    ${word.ipa ? `<p class="meta">${esc(word.ipa)}</p>` : ""}`;
+  const back = `
+    <div class="kicker">${esc(word.w)}${word.pos ? " · " + esc(word.pos) : ""}</div>
+    <div class="word" style="font-family:inherit;font-size:28px">${esc(word.zh)}</div>
+    ${memoryBlock(word)}`;
+  return `<div class="card" data-act="flip">${flipped ? back : front}</div>`;
+}
+function homeHtml() {
+  const mastered = masteredCount();
+  const pct = Math.round(mastered / WORDS.length * 100);
+  const wrongN = wrongPool().length;
+  const wx = /MicroMessenger/i.test(navigator.userAgent);
+  return `
+    <div class="mark">六级</div>
+    <h1>六级十词</h1>
+    <p class="lead">每次 10 个。2016 年四六级考纲里的词都在，公开六级词表里多出来的词也在。看到词就选意思，答完看例句，错的词会再回来。</p>
+    <div class="stats">
+      <div class="stat"><b>${mastered}</b><span>已掌握 / ${WORDS.length}</span></div>
+      <div class="stat"><b>${todayCount()}</b><span>今日记过</span></div>
+      <div class="stat"><b>${save.streak || 0}</b><span>连续天数</span></div>
+    </div>
+    <div class="bar" aria-hidden="true"><span style="width:${pct}%"></span></div>
+    <div class="stack">
+      <button class="btn" data-act="start">开始今天的 10 词</button>
+      ${wrongN ? `<button class="btn ghost" data-act="wrong">错词再记 · ${wrongN}</button>` : ""}
+      <button class="linkish" data-act="deck">翻开词库</button>
+    </div>
+    <details>
+      <summary>${wx ? "把这页发给好友" : "用微信打开"}</summary>
+      ${wx
+        ? "<p>你已经在微信里了。复制下面的链接发给好友，对方点开就能玩。进度存在各自的手机上。</p>"
+        : "<ol><li>复制下面的链接。</li><li>发给微信「文件传输助手」或好友。</li><li>点开就能背，不用和电脑连同一个网络。</li></ol><p>进度保存在这台手机里，换设备不会跟着走。</p>"}
+      <input class="url" id="share-url" readonly value="${esc(location.href)}">
+      <div class="stack">
+        <button class="btn ghost" data-act="copy">复制链接</button>
+        <button class="linkish" data-act="reset">清空这台设备的进度</button>
+      </div>
+    </details>
+    <p class="foot">词库 ${WORDS.length} 个。2016 年考纲词汇和公开六级词表已合并。易混词另有记忆钩子。</p>
+    ${AUDIT.length ? `<div class="audit">${esc(AUDIT.join("\n"))}</div>` : ""}
+  `;
+}
+function quizHtml() {
+  const q = state.queue[state.cursor];
+  const word = q.word;
+  const revealed = state.phase === "reveal";
+  const picked = revealed ? q.options[state.choice] : null;
+  const ok = revealed && picked === q.answer;
+  const segs = state.queue.map((_, i) => {
+    let cls = "";
+    if (i < state.cursor || (i === state.cursor && revealed)) cls = state.marks[i] === "bad" ? "bad" : "ok";
+    else if (i === state.cursor) cls = "on";
+    return `<i class="${cls}"></i>`;
+  }).join("");
+  const firstMeet = !rec(word.w).right && !rec(word.w).wrong;
+  const metaBits = [];
+  if (word.ipa) metaBits.push(esc(word.ipa));
+  if (word.pos) metaBits.push(esc(word.pos));
+  const prompt = q.type === "en2zh"
+    ? `<div class="word">${esc(word.w)}</div>
+       ${metaBits.length ? `<p class="meta">${metaBits.join(" · ")}</p>` : ""}`
+    : q.type === "zh2en"
+      ? `<div class="word" style="font-family:inherit;font-size:30px">${esc(word.zh)}</div>
+         <p class="meta">${word.pos ? esc(word.pos) + " " : ""}选出对应的词</p>`
+      : `<p class="cloze">${cloze(word.ex, word.w)}</p>
+         ${word.exzh ? `<p class="exzh">${esc(word.exzh)}</p>` : ""}`;
+  const opts = q.options.map((text, i) => {
+    let cls = "opt";
+    if (revealed && text === q.answer) cls += " good";
+    else if (revealed && i === state.choice) cls += " bad";
+    const en = q.type !== "en2zh";
+    return `<button class="${cls}" data-act="pick" data-i="${i}" ${revealed ? "disabled" : ""}>
+      <span class="k">${LETTERS[i] || i + 1}</span>
+      <span class="t${en ? " en" : ""}">${esc(text)}</span>
+    </button>`;
+  }).join("");
+  const note = !revealed ? "" : `
+    <div class="note ${ok ? "ok" : "bad"}">
+      <h2>${ok ? "记住了" : "先看这一眼"}</h2>
+      <p><b>${esc(word.w)}</b> ${word.pos ? esc(word.pos) + " " : ""}${esc(word.zh)}</p>
+      ${word.ipa ? `<p class="meta">${esc(word.ipa)}</p>` : ""}
+      ${memoryBlock(word)}
+      ${!ok ? `<p>你选的是：${esc(picked)}</p>` : ""}
+      <p>${esc(memoryNote(word, ok))}</p>
+      <button class="speak" data-act="speak" data-word="${esc(word.w)}">朗读</button>
+    </div>
+    <div class="scroll-pad"></div>
+    <div class="dock">
+      <button class="btn" data-act="next">${state.cursor + 1 >= state.queue.length ? "看这轮结果" : "下一词"}</button>
+    </div>`;
+  return `
+    <div class="top">
+      <button class="quiet" data-act="home">先离开</button>
+      <span class="pill">${typeName(q.type)}</span>
+    </div>
+    <div class="segs">${segs}</div>
+    <p class="count">第 ${state.cursor + 1} / ${state.queue.length} 词</p>
+    <div class="panel">
+      ${prompt}
+      ${firstMeet && !revealed ? `<p class="exzh">第一次见可以先猜，答完会留下记法。</p>` : ""}
+      <div class="opts">${opts}</div>
+      ${note}
+    </div>`;
+}
+function doneHtml() {
+  const total = state.queue.length;
+  const word = state.review[state.reviewAt];
+  const missed = state.marks.some((m, i) => m === "bad" && state.queue[i].word.w === word.w);
+  let line = "这轮有点难。先把错过的词翻开，再考一次会更清楚。";
+  if (state.right === total) line = "这轮全对。这些词开始留下来了。";
+  else if (state.right >= Math.ceil(total * 0.7)) line = "大部分记住了。把错过的翻一面，记得更牢。";
+  const wrongN = total - state.right;
+  return `
+    <button class="quiet" data-act="home">回首页</button>
+    <h1 style="font-size:32px">${state.right}/${total}</h1>
+    <p class="lead">${line}</p>
+    <p class="count" style="margin-top:16px">再翻一遍这轮的词 · ${state.reviewAt + 1}/${state.review.length}</p>
+    ${face(word, state.flipped, missed)}
+    <div class="nav">
+      <button class="btn ghost" data-act="rev-prev" ${state.reviewAt === 0 ? "disabled" : ""}>上一张</button>
+      <button class="btn ghost" data-act="flip">${state.flipped ? "看单词" : "看意思"}</button>
+      <button class="btn ghost" data-act="rev-next" ${state.reviewAt >= state.review.length - 1 ? "disabled" : ""}>下一张</button>
+    </div>
+    <div class="stack">
+      ${wrongPool().length ? `<button class="btn" data-act="wrong">错词再记 · ${wrongPool().length}</button>` : ""}
+      <button class="btn ${wrongN ? "ghost" : ""}" data-act="start">再来 10 个</button>
+    </div>`;
+}
+function deckChrome() {
+  const tabs = [
+    ["all", "全部"],
+    ["fresh", "还没熟"],
+    ["mastered", "已掌握"],
+    ["wrong", "易错"]
+  ];
+  return `
+    <button class="quiet" data-act="home">回首页</button>
+    <h1 style="font-size:32px">词库</h1>
+    <input class="search" id="deck-q" type="search" enterkeyhint="search" autocomplete="off" autocapitalize="off" placeholder="搜索单词或中文" value="${esc(state.deckQuery || "")}">
+    <div class="filters">${tabs.map(([id, name]) => `<button class="chip ${state.deckFilter === id ? "on" : ""}" data-act="filter" data-filter="${id}">${name}</button>`).join("")}</div>`;
+}
+function deckHtml() {
+  const list = deckList();
+  const q = (state.deckQuery || "").trim();
+  if (!list.length) {
+    const empty = q ? "没有找到「" + esc(q) + "」。" : (state.deckFilter === "wrong" ? "还没有易错词。先去闯一关。" : "这个分类里还没有词。");
+    return deckChrome() + `<p class="lead">${empty}</p>`;
+  }
+  if (state.deckAt >= list.length) state.deckAt = list.length - 1;
+  const word = list[state.deckAt];
+  return deckChrome() + `
+    <p class="count">${state.deckAt + 1} / ${list.length}${rec(word.w).mastered ? " · 已掌握" : ""}</p>
+    ${face(word, state.flipped, false)}
+    <div class="nav">
+      <button class="btn ghost" data-act="deck-prev" ${state.deckAt === 0 ? "disabled" : ""}>上一张</button>
+      <button class="btn ghost" data-act="flip">${state.flipped ? "看单词" : "看意思"}</button>
+      <button class="btn ghost" data-act="deck-next" ${state.deckAt >= list.length - 1 ? "disabled" : ""}>下一张</button>
+    </div>
+    <button class="speak" data-act="speak" data-word="${esc(word.w)}">朗读</button>`;
+}
+function render() {
+  const app = document.getElementById("app");
+  if (state.screen === "quiz") app.innerHTML = quizHtml();
+  else if (state.screen === "done") app.innerHTML = doneHtml();
+  else if (state.screen === "deck") app.innerHTML = deckHtml();
+  else app.innerHTML = homeHtml();
+  if (state.toast) {
+    const tip = document.createElement("div");
+    tip.className = "toast";
+    tip.textContent = state.toast;
+    app.appendChild(tip);
+  }
+  if (state.screen === "quiz" && state.phase === "ask") window.scrollTo(0, 0);
+  if (state.screen === "quiz" && state.phase === "reveal") {
+    const note = document.querySelector(".note");
+    if (note) {
+      try { note.scrollIntoView({ block: "start", behavior: "smooth" }); }
+      catch (err) { note.scrollIntoView(false); }
+    }
+  }
+}
+function onClick(e) {
+  const el = e.target.closest("[data-act]");
+  if (!el || el.disabled) return;
+  const act = el.dataset.act;
+  if (act === "start") return start("mix");
+  if (act === "wrong") return start("wrong");
+  if (act === "home") {
+    state.screen = "home";
+    state.flipped = false;
+    render();
+    return;
+  }
+  if (act === "deck") {
+    state.screen = "deck";
+    state.deckAt = 0;
+    state.flipped = false;
+    render();
+    return;
+  }
+  if (act === "pick") return onPick(Number(el.dataset.i));
+  if (act === "next") return onNext();
+  if (act === "speak") return speak(el.dataset.word);
+  if (act === "copy") return copyUrl();
+  if (act === "reset") return resetProgress();
+  if (act === "flip") {
+    state.flipped = !state.flipped;
+    render();
+    return;
+  }
+  if (act === "filter") {
+    state.deckFilter = el.dataset.filter;
+    state.deckAt = 0;
+    state.flipped = false;
+    render();
+    return;
+  }
+  if (act === "deck-prev" && state.deckAt > 0) {
+    state.deckAt -= 1;
+    state.flipped = false;
+    render();
+  }
+  if (act === "deck-next") {
+    state.deckAt += 1;
+    state.flipped = false;
+    render();
+  }
+  if (act === "rev-prev" && state.reviewAt > 0) {
+    state.reviewAt -= 1;
+    state.flipped = false;
+    render();
+  }
+  if (act === "rev-next" && state.reviewAt < state.review.length - 1) {
+    state.reviewAt += 1;
+    state.flipped = false;
+    render();
+  }
+}
+function audit() {
+  const problems = [];
+  if (!WORDS || !WORDS.length) problems.push("词库没有载入");
+  const seen = {};
+  WORDS.forEach((w) => {
+    if (!w.w || !w.zh) problems.push("缺词或释义 " + (w.w || ""));
+    if (seen[w.w]) problems.push("重复 " + w.w);
+    seen[w.w] = 1;
+    (w.trap || []).forEach((id) => {
+      if (!BY_WORD[id]) problems.push("易混词缺失 " + w.w + " " + id);
+    });
+  });
+  return problems.slice(0, 8);
+}
+
+document.getElementById("app").addEventListener("click", onClick);
+document.getElementById("app").addEventListener("input", (e) => {
+  if (e.target.id !== "deck-q") return;
+  const pos = e.target.selectionStart;
+  state.deckQuery = e.target.value;
+  state.deckAt = 0;
+  state.flipped = false;
+  render();
+  const box = document.getElementById("deck-q");
+  if (box) {
+    box.focus();
+    const p = Math.min(pos || 0, box.value.length);
+    box.setSelectionRange(p, p);
+  }
+});
+document.addEventListener("keydown", (e) => {
+  if (state.screen === "quiz" && state.phase === "ask" && e.key >= "1" && e.key <= "4") onPick(Number(e.key) - 1);
+  else if (state.screen === "quiz" && state.phase === "reveal" && (e.key === "Enter" || e.key === " ")) {
+    e.preventDefault();
+    onNext();
+  }
+});
+render();
+</script>
+</body>
+</html>
